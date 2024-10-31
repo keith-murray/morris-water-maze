@@ -3,20 +3,26 @@ import torch
 import numpy as np
 
 class MorrisWaterMaze():
-    def __init__(self,):
-        self.length = 20
-        self.width = 20
+    def __init__(self, seed):
+        self.rng = torch.Generator()
+        self.rng.manual_seed(seed)
+
+        self.length = 20 #TODO: Parameterize
+        self.width = 20 #TODO: Parameterize
         self.arena = torch.zeros(self.length+2, self.width+2)
+        self.lower = 1
+        self.upper = 6
+
         self.FillSides()
         self.AssignReward()
         self.CreateWallList()
         self.PlaceAgent()
         
     def FillSides(self,):
-        top = torch.randint(1,6,(self.width+2,))
-        bottom = torch.randint(1,6,(self.width+2,))
-        left = torch.randint(1,6,(self.length+2,))
-        right = torch.randint(1,6,(self.length+2,))
+        top = torch.randint(self.lower, self.upper, (self.width+2,), generator=self.rng)
+        bottom = torch.randint(self.lower, self.upper, (self.width+2,), generator=self.rng)
+        left = torch.randint(self.lower, self.upper, (self.length+2,), generator=self.rng)
+        right = torch.randint(self.lower, self.upper, (self.length+2,), generator=self.rng)
         
         self.arena[0,:] = top
         self.arena[-1,:] = bottom
@@ -55,8 +61,8 @@ class MorrisWaterMaze():
             self.wallVals.append(self.arena[i[0], i[1]].item())
                 
     def AssignReward(self,):
-        lenPos = torch.randint(1,self.length+1,(1,)).item()
-        widPos = torch.randint(1,self.width+1,(1,)).item()
+        lenPos = torch.randint(1,self.length+1,(1,), generator=self.rng).item()
+        widPos = torch.randint(1,self.width+1,(1,), generator=self.rng).item()
         rewards = []
         for i in [-1,0,1]:
             for j in [-1,0,1]:
@@ -75,8 +81,8 @@ class MorrisWaterMaze():
         self.rewards = set(rewards)
     
     def PlaceAgent(self,):
-        lenAgn = torch.randint(1,self.length+1,(1,))[0]
-        widAgn = torch.randint(1,self.width+1,(1,))[0]
+        lenAgn = torch.randint(1,self.length+1,(1,), generator=self.rng)[0]
+        widAgn = torch.randint(1,self.width+1,(1,), generator=self.rng)[0]
         posAgn = (lenAgn, widAgn)
         
         if posAgn in self.rewards:
@@ -84,7 +90,7 @@ class MorrisWaterMaze():
         else:
             self.posAgn = posAgn
             
-        self.headAgn = 2*np.pi*torch.rand(1)[0]
+        self.headAgn = 2*np.pi*torch.rand(1, generator=self.rng)[0]
         
         sight = self.GetVision()
         sightRange = torch.where(sight > 0, 1, 0)
@@ -128,7 +134,6 @@ class MorrisWaterMaze():
             else:
                 return self.wallVals[firstInd:] + self.wallVals[:secondInd+1], self.wallList[firstInd:] + self.wallList[:secondInd+1]
         
-    
     def GetVision(self, locations=False):
         visAbv = self.headAgn + np.pi/6
         visBlw = self.headAgn - np.pi/6

@@ -8,7 +8,7 @@ class RNN(nn.Module):
         self.n_hid = n_hid
         self.cell = nn.RNNCell(n_inp, n_hid, bias=True, nonlinearity='relu')
         self.readout = nn.Linear(n_hid, n_out)
-        self.state_initial = torch.rand(1, n_hid)
+        self.state_initial = torch.ones(1, n_hid)
         self.state = self.state_initial
 
     def forward(self, x):
@@ -26,9 +26,9 @@ class LSTM(nn.Module):
         self.n_hid = n_hid
         self.cell = nn.LSTMCell(n_inp, n_hid, bias=True)
         self.readout = nn.Linear(n_hid, n_out)
-        self.state_initial = torch.rand(1, n_hid)
+        self.state_initial = torch.ones(1, n_hid)
         self.state = self.state_initial
-        self.memory_initial = torch.rand(1, n_hid)
+        self.memory_initial = torch.ones(1, n_hid)
         self.memory = self.memory_initial
 
     def forward(self, x):

@@ -3,6 +3,10 @@ import torch
 from torch import nn
 
 class RNN(nn.Module):
+    """
+    Simple wrapper for PyTorch's `RNNCell`. Notice that the RNN loop happens in
+    the training function because of the intricacies of the `MorrisWaterMaze` task.
+    """
     def __init__(self, n_inp, n_hid, n_out):
         super(RNN, self).__init__()
         self.n_hid = n_hid
@@ -21,6 +25,10 @@ class RNN(nn.Module):
         self.state = self.state_initial
         
 class LSTM(nn.Module):
+    """
+    Simple wrapper for PyTorch's `LSTMCell`. Notice that the RNN loop happens in
+    the training function because of the intricacies of the `MorrisWaterMaze` task.
+    """
     def __init__(self, n_inp, n_hid, n_out):
         super(LSTM, self).__init__()
         self.n_hid = n_hid

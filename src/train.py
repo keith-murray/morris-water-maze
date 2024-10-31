@@ -13,11 +13,17 @@ def set_seed(seed):
     torch.manual_seed(seed)
 
 def CalculateReward(step):
+    """
+    I do not remember my logic behind this reward function.
+    It's only for evaluating the performance of the agent, not
+    for backpropagation to train the agent.
+    """
     denominator = 1/(1+np.exp(-0.06*50))
     reward = 1/(1+np.exp(0.06*(step-50)))
     return reward/denominator
 
 def train(environment, model, epochs, trials, steps, blackBox):
+    """Function to simulate and train an agent performing in `MorrisWaterMaze`."""
     optimizer = torch.optim.Adam(model.parameters())
     model.train()
     rewardHistory = []
@@ -38,6 +44,7 @@ def train(environment, model, epochs, trials, steps, blackBox):
                 sightVals = enviro.GetVision()
                 out = model(sightVals)
                 enviro.UpdateAgent(out[0], out[1], out[2])
+                # Error is modulated by number of steps.
                 cumulativeError += enviro.CalculateRewardDistance()*k/steps
                 if enviro.CheckReward():
                     reward = CalculateReward(k)
@@ -58,7 +65,7 @@ def train(environment, model, epochs, trials, steps, blackBox):
 
 
 if __name__ == "__main__":
-    seed = 69*69
+    seed = 6942069
     set_seed(seed)
     enviro = MorrisWaterMaze(seed,)
     enviro.ReAssignReward((10,10))

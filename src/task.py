@@ -3,12 +3,23 @@ import torch
 import numpy as np
 
 class MorrisWaterMaze():
+    """
+    A `MorrisWaterMaze` object is an environment that a simulated agent can interact with.
+    The `GetVision` method is called to create a vision vector of what the agent sees.
+    This vision vector is passed to the agent, and the agent returns actions.
+    The `UpdateAgent` method takes in the agents actions and updates their location in the object.
+    The `CheckReward` method returns a boolean indicating if the agent is in the reward zone.
+
+    This code isn't the most optimal, but the logic for creating the vision vector is rather unique.
+    It works by particles coming out of the peripheral of the agents sight, and the `ScourWalls` 
+    function grabs all the wall values inbetween the peripheral particles. Neat right?
+    """
     def __init__(self, seed):
         self.rng = torch.Generator()
         self.rng.manual_seed(seed)
 
-        self.length = 20 #TODO: Parameterize
-        self.width = 20 #TODO: Parameterize
+        self.length = 20
+        self.width = 20
         self.arena = torch.zeros(self.length+2, self.width+2)
         self.lower = 1
         self.upper = 6
@@ -19,6 +30,7 @@ class MorrisWaterMaze():
         self.PlaceAgent()
         
     def FillSides(self,):
+        """Generate values for the sides of the maze."""
         top = torch.randint(self.lower, self.upper, (self.width+2,), generator=self.rng)
         bottom = torch.randint(self.lower, self.upper, (self.width+2,), generator=self.rng)
         left = torch.randint(self.lower, self.upper, (self.length+2,), generator=self.rng)
@@ -33,7 +45,11 @@ class MorrisWaterMaze():
         self.arena[0,-1] = 0
         self.arena[-1,-1] = 0
         
-    def CreateWallList(self,):        
+    def CreateWallList(self,):
+        """
+        Constructs a dictionary of wall positions.
+        Dictionary is used in grabing the values of the walls the agent is looking at.
+        """
         right = [i for i in range(self.width + 2)]
         left = [i for i in reversed(right)]
         down = [21 for i in range(self.length + 2)]
@@ -61,6 +77,7 @@ class MorrisWaterMaze():
             self.wallVals.append(self.arena[i[0], i[1]].item())
                 
     def AssignReward(self,):
+        """Create a random reward location."""
         lenPos = torch.randint(1,self.length+1,(1,), generator=self.rng).item()
         widPos = torch.randint(1,self.width+1,(1,), generator=self.rng).item()
         rewards = []
@@ -71,7 +88,8 @@ class MorrisWaterMaze():
         self.reward = (lenPos, widPos)
         self.rewards = set(rewards)
         
-    def ReAssignReward(self, reward):        
+    def ReAssignReward(self, reward):
+        """Assign reward to a fixed location."""
         rewards = []
         for i in [-1,0,1]:
             for j in [-1,0,1]:
@@ -81,6 +99,7 @@ class MorrisWaterMaze():
         self.rewards = set(rewards)
     
     def PlaceAgent(self,):
+        """Randomly place agent in maze."""
         lenAgn = torch.randint(1,self.length+1,(1,), generator=self.rng)[0]
         widAgn = torch.randint(1,self.width+1,(1,), generator=self.rng)[0]
         posAgn = (lenAgn, widAgn)
@@ -99,7 +118,10 @@ class MorrisWaterMaze():
             self.PlaceAgent()
         
     def ReachWall(self, ang, above=True):
-        
+        """
+        Simulates particles coming from the agents peripheral to grab
+        the wall locations needed for the `ScourWalls` function.
+        """
         for r in np.linspace(1, 30, num=50):
             length = int(r*torch.cos(ang) + self.posAgn[0])
             width = int(r*torch.sin(ang) + self.posAgn[1])
@@ -120,6 +142,7 @@ class MorrisWaterMaze():
             return self.ReachWall(ang-np.pi/20, above=False)            
     
     def ScourWalls(self, wallAbove, wallBellow, location=False):
+        """Grabs values along walls to construct agents vision."""
         firstInd = self.wallDict[wallAbove]
         secondInd = self.wallDict[wallBellow]
         
@@ -135,6 +158,7 @@ class MorrisWaterMaze():
                 return self.wallVals[firstInd:] + self.wallVals[:secondInd+1], self.wallList[firstInd:] + self.wallList[:secondInd+1]
         
     def GetVision(self, locations=False):
+        """Returns a vector of wall values depending on the position and head direction of the agent."""
         visAbv = self.headAgn + np.pi/6
         visBlw = self.headAgn - np.pi/6
         
@@ -164,6 +188,7 @@ class MorrisWaterMaze():
             return torch.unsqueeze(torch.tensor(sightVals), 0), sightInd
     
     def CheckReward(self,):
+        """Function to check if agent has reached the reward zone."""
         realPos = tuple([int(i) for i in self.posAgn])
         if realPos in self.rewards:
             return True
@@ -171,6 +196,7 @@ class MorrisWaterMaze():
             return False
         
     def UpdateAgent(self, newLength, newWidth, newAngle):
+        """Update agent's position based on their output."""
         posLength = self.posAgn[0] + newLength
         posWidth = self.posAgn[1] + newWidth
         if posLength > 21:

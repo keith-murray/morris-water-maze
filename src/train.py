@@ -18,7 +18,6 @@ def train(environment, model, epochs, trials, steps, blackBox):
     errorHistory = []
     dark = torch.zeros(1, 49)
     
-    print('Epoch progress bar')
     for i in tqdm(range(epochs)):
         model.reset()
         optimizer.zero_grad()

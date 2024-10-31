@@ -40,5 +40,3 @@ class LSTM(nn.Module):
     def reset(self,):
         self.state = self.state_initial
         self.memory = self.memory_initial
-
-

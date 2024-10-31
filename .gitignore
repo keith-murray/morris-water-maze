@@ -1,0 +1,9 @@
+.DS_Store
+__pycache__/
+.venv/
+.mypy_cache/
+pytest_cache/
+.coverage
+.env
+.ipynb_checkpoints/
+data/

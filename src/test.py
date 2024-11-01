@@ -1,4 +1,5 @@
 """Testing functions."""
+import os
 import torch
 import numpy as np
 import matplotlib.pyplot as plt
@@ -11,7 +12,7 @@ red = np.array([255,17,0])
 green = np.array([0,176,24])
 yellow = np.array([255,237,0])
 
-def test(environment, model, trials, steps, blackBox, save_loc):
+def test(environment, model, trials, steps, blackBox, seed, save_loc):
     """
     Simulates the agent performing in the `MorrisWaterMaze` task and 
     records a video.
@@ -75,8 +76,14 @@ def test(environment, model, trials, steps, blackBox, save_loc):
     arena = arena[0:timeCount].astype('int32')
     fig = plt.figure()
     camera = Camera(fig)
+    
     for i in range(timeCount):
         plt.imshow(arena[i,:,:,:])
         camera.snap()
+
     animation = camera.animate()
-    animation.save(save_loc, writer = 'pillow', fps=15)
+    animation.save(
+        os.path.join(save_loc, f'simulated_tests_{seed}.gif'), 
+        writer = 'pillow', 
+        fps=15
+    )

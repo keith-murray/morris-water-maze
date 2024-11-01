@@ -1,11 +1,30 @@
-"""Function to visualize neuron receptive fields."""
+"""Analysis functions."""
+import os
 import torch
 import numpy as np
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 import seaborn as sns
 
-def neuron_activation(environment, model, trials, steps, blackBox, neuron, figure_title, save_loc):
+def plot_error_reward(rewardHistory, errorHistory, seed, save_loc):
+    """Simple plotting function for errors and rewards over epochs."""
+    fig, ax = plt.subplots()
+    ax.plot(rewardHistory)
+    ax.set_xlabel('Training Epochs')
+    ax.set_ylabel('Reward')
+    ax.set_title('Accumulated reward over training epochs')
+    plt.savefig(os.path.join(save_loc, f'accumulated_reward_{seed}.png'))
+    plt.show()
+
+    fig, ax = plt.subplots()
+    ax.plot(errorHistory)
+    ax.set_xlabel('Training Epochs')
+    ax.set_ylabel('Distance Error')
+    ax.set_title('Accumulated distance error over epochs')
+    plt.savefig(os.path.join(save_loc, f'accumulated_error_{seed}.png'))
+    plt.show()
+
+def neuron_activation(environment, model, trials, steps, blackBox, neuron, seed, save_loc):
     """
     For a particular neuron, this function creates a heatmap of the neurons activations
     across the spatial grid of the `MorrisWaterMaze` environment.
@@ -23,16 +42,16 @@ def neuron_activation(environment, model, trials, steps, blackBox, neuron, figur
         environment.PlaceAgent()
         
         for k in range(steps):
-            sightVals, sightInd = enviro.GetVision(locations=True)
+            sightVals, sightInd = environment.GetVision(locations=True)
             out = model(sightVals)
-            enviro.UpdateAgent(out[0], out[1], out[2])
+            environment.UpdateAgent(out[0], out[1], out[2])
             
-            agnLoc = enviro.posAgn
+            agnLoc = environment.posAgn
             agnLen = int(agnLoc[0].item())
             agnWid = int(agnLoc[1].item())
             walls[(agnLen, agnWid)].append(model.state[0,neuron])
             
-            if enviro.CheckReward():
+            if environment.CheckReward():
                 break
         
         for k in range(blackBox):
@@ -49,6 +68,6 @@ def neuron_activation(environment, model, trials, steps, blackBox, neuron, figur
     
     fig, ax = plt.subplots()
     ax = sns.heatmap(wallHeatmap, vmin=-1, vmax=1)
-    ax.set_title(figure_title)
+    ax.set_title(os.path.join(save_loc, f'neuron_{neuron}_heatmap_{seed}.png'))
     plt.savefig(save_loc)
     plt.show()

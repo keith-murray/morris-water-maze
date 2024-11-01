@@ -1,16 +1,6 @@
 """Training functions."""
 import torch
-import random
 import numpy as np
-from task import MorrisWaterMaze
-from models import LSTM
-import matplotlib.pyplot as plt
-from tqdm import tqdm
-
-def set_seed(seed):
-    random.seed(seed)
-    np.random.seed(seed)
-    torch.manual_seed(seed)
 
 def CalculateReward(step):
     """
@@ -62,28 +52,3 @@ def train(environment, model, epochs, trials, steps, blackBox):
         errorHistory.append(cumulativeError.item())
 
     return rewardHistory, errorHistory
-
-
-if __name__ == "__main__":
-    seed = 6942069
-    set_seed(seed)
-    enviro = MorrisWaterMaze(seed,)
-    enviro.ReAssignReward((10,10))
-    model = LSTM(49, 500, 3)
-    rewardHistory, errorHistory = train(enviro, model, 1000, 25, 100, 10)
-    
-    fig, ax = plt.subplots()
-    ax.plot(rewardHistory)
-    ax.set_xlabel('Training Epochs')
-    ax.set_ylabel('Reward')
-    ax.set_title('Accumulated reward over training epochs')
-    plt.savefig(f'accumulated_reward_{seed}.png')
-    plt.show()
-    
-    fig, ax = plt.subplots()
-    ax.plot(errorHistory)
-    ax.set_xlabel('Training Epochs')
-    ax.set_ylabel('Distance Error')
-    ax.set_title('Accumulated distance error over epochs')
-    plt.savefig(f'accumulated_error_{seed}.png')
-    plt.show()

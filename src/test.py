@@ -85,5 +85,5 @@ def test(environment, model, trials, steps, blackBox, seed, save_loc):
     animation.save(
         os.path.join(save_loc, f'simulated_tests_{seed}.gif'), 
         writer = 'pillow', 
-        fps=10
+        fps=7
     )

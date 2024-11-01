@@ -21,7 +21,7 @@ parser = argparse.ArgumentParser(description="Pipeline for training, testing, an
 parser.add_argument('--seed', type=int, default=6942069, help='Seed for reproducibility')
 parser.add_argument('--save_loc', type=str, required=True, help='Location to save the outputs')
 parser.add_argument('--hidden_neurons', type=int, default=500, help='Number of hidden neurons in the model')
-parser.add_argument('--epochs', type=int, default=1000, help='Number of training epochs')
+parser.add_argument('--epochs', type=int, default=450, help='Number of training epochs')
 
 args = parser.parse_args()
 

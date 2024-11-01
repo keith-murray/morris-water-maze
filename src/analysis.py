@@ -14,7 +14,7 @@ def plot_error_reward(rewardHistory, errorHistory, seed, save_loc):
     ax.set_ylabel('Reward')
     ax.set_title('Accumulated reward over training epochs')
     plt.savefig(os.path.join(save_loc, f'accumulated_reward_{seed}.png'))
-    plt.show()
+    plt.close()
 
     fig, ax = plt.subplots()
     ax.plot(errorHistory)
@@ -22,7 +22,7 @@ def plot_error_reward(rewardHistory, errorHistory, seed, save_loc):
     ax.set_ylabel('Distance Error')
     ax.set_title('Accumulated distance error over epochs')
     plt.savefig(os.path.join(save_loc, f'accumulated_error_{seed}.png'))
-    plt.show()
+    plt.close()
 
 def neuron_activation(environment, model, trials, steps, blackBox, neuron, seed, save_loc):
     """
@@ -68,6 +68,6 @@ def neuron_activation(environment, model, trials, steps, blackBox, neuron, seed,
     
     fig, ax = plt.subplots()
     ax = sns.heatmap(wallHeatmap, vmin=-1, vmax=1)
-    ax.set_title(os.path.join(save_loc, f'neuron_{neuron}_heatmap_{seed}.png'))
-    plt.savefig(save_loc)
-    plt.show()
+    ax.set_title(f'Neuron {neuron} activations')
+    plt.savefig(os.path.join(save_loc, f'neuron_{neuron}_heatmap_{seed}.png'))
+    plt.close()

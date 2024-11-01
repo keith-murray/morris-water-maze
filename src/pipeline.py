@@ -78,7 +78,7 @@ neuron_activation(
     50,  # Trials
     100,  # Steps allowed per trial
     10,  # Blackbox steps
-    420,  # Neuron number
+    69,  # Neuron number
     args.seed,
     args.save_loc,
 )

@@ -1,6 +1,7 @@
 """Training functions."""
 import torch
 import numpy as np
+from tqdm import tqdm
 
 def CalculateReward(step):
     """
@@ -31,12 +32,12 @@ def train(environment, model, epochs, trials, steps, blackBox):
             environment.PlaceAgent()
             
             for k in range(steps):
-                sightVals = enviro.GetVision()
+                sightVals = environment.GetVision()
                 out = model(sightVals)
-                enviro.UpdateAgent(out[0], out[1], out[2])
+                environment.UpdateAgent(out[0], out[1], out[2])
                 # Error is modulated by number of steps.
-                cumulativeError += enviro.CalculateRewardDistance()*k/steps
-                if enviro.CheckReward():
+                cumulativeError += environment.CalculateRewardDistance()*k/steps
+                if environment.CheckReward():
                     reward = CalculateReward(k)
                     break
             

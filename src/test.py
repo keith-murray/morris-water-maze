@@ -12,7 +12,7 @@ red = np.array([255,17,0])
 green = np.array([0,176,24])
 yellow = np.array([255,237,0])
 
-def test(environment, model, trials, steps, blackBox, seed, save_loc):
+def test(environment, model, trials, steps, blackBox, seed, save_loc, fps=7):
     """
     Simulates the agent performing in the `MorrisWaterMaze` task and 
     records a video.
@@ -85,5 +85,5 @@ def test(environment, model, trials, steps, blackBox, seed, save_loc):
     animation.save(
         os.path.join(save_loc, f'simulated_tests_{seed}.gif'), 
         writer = 'pillow', 
-        fps=7
+        fps=fps
     )
